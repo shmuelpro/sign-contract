@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-
+import { v4 as uuid } from 'uuid';
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
@@ -21,11 +21,12 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  width: 360,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
-  p: 4,
+
+
 };
 
 
@@ -41,10 +42,12 @@ const styleX = {
   boxShadow: 24,
 };
 
+
+
 const Home: NextPage = () => {
 
 
-  const [seifim, setSeifim] = useState([{id:"asd", title: "הקדמה", body: "המבוא להסכם זה מהווה חלק בלתי נפרד ממנו ותנאי מתנאיו." }]);
+  const [seifim, setSeifim] = useState([{ id: "asd", title: "הקדמה", body: "המבוא להסכם זה מהווה חלק בלתי נפרד ממנו ותנאי מתנאיו." }]);
   const [open, setOpen] = useState(false);
   const [openSignature, setOpenSignature] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -54,6 +57,10 @@ const Home: NextPage = () => {
 
   const [seifBody, setSeifBody] = useState<string>("");
   const [seifTitle, setSeifTitle] = useState<string>("");
+
+  const [seller,setSeller] = useState<string>("");
+  const [buyer,setBuyer] = useState<string>("");
+
 
   const TOPDF = async () => {
     const html2pdf = await import('html2pdf.js')
@@ -71,7 +78,7 @@ const Home: NextPage = () => {
 
   }, [])
 
- 
+
 
 
   const startSig = () => {
@@ -84,10 +91,10 @@ const Home: NextPage = () => {
         <AppBar position="static">
           <Toolbar>
             <Button
-            color="inherit"
+              color="inherit"
               onClick={handleOpen}
             >
-            הוסף סעיף 
+              הוסף סעיף
             </Button>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
 
@@ -97,19 +104,21 @@ const Home: NextPage = () => {
           </Toolbar>
         </AppBar>
       </Box>
-      <Box sx={{ my: 4 }}>
+      <Box sx={{ my: 4, p: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          <FormControl>
+          <div><FormControl>
             <InputLabel style={{ right: 0 }} htmlFor="my-input">המוכר</InputLabel>
-            <Input id="my-input" aria-describedby="my-helper-text" />
+            <Input value={seller} onChange={(event)=>setSeller(event.target.value)}  id="my-input" aria-describedby="my-helper-text" />
 
           </FormControl>
-          <FormControl sx={{ mx: 4 }}>
+          </div>
+          <div style={{marginTop:"20px"}}><FormControl>
             <InputLabel style={{ right: 0 }} htmlFor="my-input">הקונה</InputLabel>
-            <Input id="my-input" aria-describedby="my-helper-text" />
+            <Input value={buyer} onChange={(event)=>setBuyer(event.target.value)} id="my-input" aria-describedby="my-helper-text" />
 
-          </FormControl>
+          </FormControl>   </div>
         </Typography>
+
 
       </Box>
       <div>
@@ -136,7 +145,7 @@ const Home: NextPage = () => {
                     console.log(oldSeifim)
                     return tempS;
                   });
-                
+
                 }}           >
                   מחק
                 </Button>
@@ -149,11 +158,22 @@ const Home: NextPage = () => {
 
 
       </div>
-      <div style={{ padding: "100px" }} ref={ref}>
-        <div>
+     
+     <div>תוצאה</div>
+      <div   ref={ref}>
+        <div style={{
+          display: "flex", justifyContent: "center", marginBottom: "50px",flexDirection:"column",fontWeight:700
+        }}>
+          <div style={{marginBottom:"10px", display: "flex", justifyContent: "center",flexDirection:"column",textAlign:"center"}}>
           <div>בין </div>
-           </div>
-        {seifim.map((seif, index) => {
+          <div>{seller} </div>
+          </div>
+          <div style={{marginBottom:"10px", display: "flex", justifyContent: "center",flexDirection:"column",textAlign:"center"}}>
+          <div>לבין</div>
+          <div>{buyer}</div>
+          </div>
+        </div>
+        <div style={{ padding: "50px" }}>{seifim.map((seif, index) => {
 
           console.log(seif)
 
@@ -161,6 +181,7 @@ const Home: NextPage = () => {
             {index + 1}. {seif.body}
           </div>)
         })}
+        </div>
         <img src={signatureImage} />
       </div>
       <Modal
@@ -180,7 +201,7 @@ const Home: NextPage = () => {
           </Typography>
           <Typography id="modal-modal-description" sx={{ mt: 2, width: "100%" }}>
             <TextField
-
+              style={{width:"100%"}}
               dir="rtl"
               id="outlined-multiline-static"
               label="סעיף"
@@ -193,7 +214,7 @@ const Home: NextPage = () => {
           <Button onClick={() => {
             setSeifim(oldSeifim => {
 
-              oldSeifim.push({ id:"asd",title: seifTitle, body: seifBody })
+              oldSeifim.push({ id: uuid(), title: seifTitle, body: seifBody })
               return oldSeifim;
 
             });
@@ -210,7 +231,7 @@ const Home: NextPage = () => {
         aria-describedby="modal-modal-description"
       >
         <Box sx={styleX}>
-          <canvas width="400" height="300" ref={refSig}>
+          <canvas width="360" height="240" ref={refSig}>
           </canvas>
           <div style={{ background: "#f6f6f6" }}> <Button onClick={() => {
 
